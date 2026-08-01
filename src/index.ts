@@ -4,54 +4,28 @@ import { z } from "zod";
 
 function createServer() {
 	const server = new McpServer({
-		name: "Authless Calculator",
+		name: "Financial Test",
 		version: "1.0.0",
 	});
 
 	server.registerTool(
-		"add",
-		{ inputSchema: z.object({ a: z.number(), b: z.number() }) },
-		async ({ a, b }) => ({
-			content: [{ type: "text", text: String(a + b) }],
-		}),
-	);
-
-	server.registerTool(
-		"calculate",
+		"financial_test",
 		{
+			description: "Analyze financial data provided by the user.",
 			inputSchema: z.object({
-				operation: z.enum(["add", "subtract", "multiply", "divide"]),
-				a: z.number(),
-				b: z.number(),
+				financial_data: z.string().describe(
+					"The financial data or information to analyze"
+				),
 			}),
 		},
-		async ({ operation, a, b }) => {
-			let result: number;
-			switch (operation) {
-				case "add":
-					result = a + b;
-					break;
-				case "subtract":
-					result = a - b;
-					break;
-				case "multiply":
-					result = a * b;
-					break;
-				case "divide":
-					if (b === 0)
-						return {
-							content: [
-								{
-									type: "text",
-									text: "Error: Cannot divide by zero",
-								},
-							],
-						};
-					result = a / b;
-					break;
-			}
-			return { content: [{ type: "text", text: String(result) }] };
-		},
+		async ({ financial_data }) => ({
+			content: [
+				{
+					type: "text",
+					text: `Financial data received for analysis: ${financial_data}`,
+				},
+			],
+		}),
 	);
 
 	return server;
